@@ -2,19 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ConsoleApplication1
+namespace PathFinding
 {
     public class Grid
     {
         public Grid(List<Node> nodes)
         {
-            Process(nodes);
             Nodes = nodes;
+            Initialize(Nodes);
         }
 
         public List<Node> Nodes { get; private set; }
 
         public void Render()
+        {
+            Render(new List<Node>());
+        }
+
+        public void Render(List<Node> solution)
         {
             var allLines = Nodes
                 .GroupBy(node => node.Y)
@@ -24,26 +29,22 @@ namespace ConsoleApplication1
             {
                 foreach (var x in line.OrderBy(element => element.X))
                 {
-                    Console.Write("{0}{1} ", x.Y, x.X);
+                    if (solution.Contains(x))
+                        Console.Write(x);
+                    else
+                        Console.Write("..");
                 }
 
                 Console.Write(Environment.NewLine);
-            }
-
-            Console.Write(Environment.NewLine);
-            Console.Write(Environment.NewLine);
-
-            foreach (var node in Nodes)
-            {
-                Console.WriteLine("Node " + node.Name + " can reach " + node.Reachable.Count + " nodes.");
+                Console.Write(Environment.NewLine);
             }
         }
 
-        private static void Process(List<Node> nodes)
+        private static void Initialize(List<Node> nodes)
         {
             foreach (var node in nodes)
             {
-                var left = nodes.SingleOrDefault(n => n.Y == node.X && n.X == (node.X - 1));
+                var left = nodes.SingleOrDefault(n => n.Y == node.Y && n.X == (node.X - 1));
                 var right = nodes.SingleOrDefault(n => n.Y == node.Y && n.X == (node.X + 1));
                 var up = nodes.SingleOrDefault(n => n.X == node.X && n.Y == (node.Y - 1));
                 var down = nodes.SingleOrDefault(n => n.X == node.X && n.Y == (node.Y + 1));

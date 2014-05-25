@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConsoleApplication1
+namespace PathFinding
 {
     public class Node
     {
@@ -14,10 +14,36 @@ namespace ConsoleApplication1
         public int X { get; set; }
         public int Y { get; set; }
         public List<Node> Reachable { get; set; }
+        public Node Previous { get; set; }
 
-        public string Name
+        public override string ToString()
         {
-            get { return string.Format("{0}{1}", Y, X); }
+            return string.Format("{0}{1}", Y, X);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = (Node) obj;
+            return (X == other.X && Y == other.Y);
+        }
+
+        //public static bool operator ==(Node left, Node right)
+        //{
+        //    if (left == null || right == null)
+        //        return false;
+
+        //    return (left.X == right.X && 
+        //            left.Y == right.Y);
+        //}
+
+        //public static bool operator !=(Node left, Node right)
+        //{
+        //    return !(left == right);
+        //}
+
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ Y.GetHashCode();
         }
     }
 }
