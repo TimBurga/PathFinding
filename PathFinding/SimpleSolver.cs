@@ -12,38 +12,45 @@ namespace PathFinding
             var reachable = new List<Node> { startNode };
             var solution = new List<Node>();
 
+            startNode.Cost = 0;
+
             while (reachable.Any())
             {
-                var workingNode = ChooseNode(reachable);
+                var here = ChooseNode(reachable);
 
-                if (workingNode.Equals(endNode))
+                if (here.Equals(endNode))
                 {
-                    while (workingNode != null)
+                    while (here != null)
                     {
-                        solution.Add(workingNode);
-                        workingNode = workingNode.Previous;
+                        solution.Add(here);
+                        here = here.Previous;
                     }
 
                     return solution;
                 }
 
-                var nextReachables = workingNode.Reachable.Except(explored).ToList();
+                var candidates = here.Reachable.Except(explored).ToList();
                 
-                while (nextReachables.Any())
+                while (candidates.Any())
                 {
-                    var nextNode = ChooseNode(nextReachables);
+                    var nextNode = ChooseNode(candidates);
 
                     if (!reachable.Contains(nextNode))
                     {
-                        nextNode.Previous = workingNode;
                         reachable.Add(nextNode);
                     }
 
-                    nextReachables.Remove(nextNode);
+                    if (here.Cost + 1 < nextNode.Cost)
+                    {
+                        nextNode.Previous = here;
+                        nextNode.Cost = here.Cost + 1;
+                    }
+
+                    candidates.Remove(nextNode);
                 } 
 
-                reachable.Remove(workingNode);
-                explored.Add(workingNode);
+                reachable.Remove(here);
+                explored.Add(here);
             }
 
             return solution;
@@ -51,12 +58,24 @@ namespace PathFinding
 
         private static Node ChooseNode(List<Node> reachable)
         {
-            var reachableCount = reachable.Count();
-            if (reachableCount == 0)
+            if (!reachable.Any()) 
                 return null;
 
-            var rand = new Random(DateTime.Now.Millisecond).Next(0, reachableCount - 1);
-            return reachable[rand];
+            var rand = new Random(DateTime.Now.Millisecond).Next(0, reachable.Count() - 1);
+            Node best = reachable[rand];
+
+            //var aggd = reachable.Aggregate((node, best) => best == null || node.Cost + 1 < best.Cost ? node : best);
+           // return aggd;
+
+            foreach (var node in reachable)
+            {
+                if (best.Cost > node.Cost)
+                {
+                    best = node;
+                }
+            }
+
+            return best;
         }
     }
 }

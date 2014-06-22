@@ -25,12 +25,19 @@ namespace PathFinding
                 .GroupBy(node => node.Y)
                 .OrderBy(group => group.Key);
 
+            Console.Write(Environment.NewLine);
+
+            if (solution.Any())
+            {
+                Console.WriteLine(string.Format("Goal reached in {0} steps:", solution.Max(node => node.Cost) + 1));
+            }
+
             foreach (var line in allLines)
             {
                 foreach (var x in line.OrderBy(element => element.X))
                 {
                     if (solution.Contains(x))
-                        Console.Write(x);
+                        Console.Write((x.Cost + 1).ToString("00"));
                     else
                         Console.Write("..");
                 }
